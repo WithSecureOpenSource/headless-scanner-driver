@@ -2,7 +2,7 @@ headless-burp
 =============
 
 Python Burp Suite extension for non-interactive active scanning.
-Burp and Burp Suite are trademarks of Postswigger, Ltd.
+Burp and Burp Suite are trademarks of Portswigger, Ltd.
 
 Usage
 -----
