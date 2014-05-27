@@ -12,6 +12,11 @@ acquire the standalone Jython interpreter (version 2.7 or newer) and
 tell Burp Suite where it is. After this, it will start an active scan
 for all HTTP requests that are initiated through the proxy.
 
+WARNING: The extension will indiscriminately start active scanning against
+all URIs it sees, regardless of Burp Suite GUI Active Scanner setting.
+To protect non-target sites, set a Target Scope and drop all requests not in suite
+scope.
+
 The extension will write JSON objects to stdout, one per line.
 
 Run Burp Suite in headless mode using:
@@ -35,6 +40,9 @@ scan has finished.
 
 Your client can emit a HTTP request to port 1112 which causes the
 extension to dump all scanner findings and to cleanly exit.
+
+For examples of how to use this from Python, see
+https://github.com/F-Secure/mittn/blob/master/mittn/headlessscanner/
 
 Bugs
 ----
