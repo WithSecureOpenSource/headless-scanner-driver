@@ -113,30 +113,30 @@ class BurpExtender(IBurpExtender, IScannerListener, IProxyListener, IHttpListene
                     self._scanlist.append(scaninstance)
         return
 
-        def get_issues():
-            scanissues = []
-            # Collect issues. We have a list of scans that contain
-            # scan findings. Extract these and dump in a JSON.
-            for scaninstance in self._scanlist:
-                for scanissue in scaninstance.getIssues():
-                    issue = {}
-                    issue['url'] = scanissue.getUrl().toString()
-                    issue['severity'] = scanissue.getSeverity()
-                    issue['issuetype'] = scanissue.getIssueType()
-                    issue['issuename'] = scanissue.getIssueName()
-                    issue['issuedetail'] = scanissue.getIssueDetail()
-                    issue['confidence'] = scanissue.getConfidence()
-                    issue['host'] = scanissue.getHttpService().getHost()
-                    issue['port'] = scanissue.getHttpService().getPort()
-                    issue['protocol'] = scanissue.getHttpService().getProtocol()
-                    messages = []
-                    for httpmessage in scanissue.getHttpMessages():
-                        request = httpmessage.getRequest().tostring()
-                        request = request.encode('utf-8')
-                        response = httpmessage.getResponse().tostring()
-                        response = response.encode('utf-8')
-                        messages.append((request,
-                                         response))
-                    issue['messages'] = messages
-                    scanissues.append(copy.copy(issue))
-            return scanissues
+    def get_issues(self):
+        scanissues = []
+        # Collect issues. We have a list of scans that contain
+        # scan findings. Extract these and dump in a JSON.
+        for scaninstance in self._scanlist:
+            for scanissue in scaninstance.getIssues():
+                issue = {}
+                issue['url'] = scanissue.getUrl().toString()
+                issue['severity'] = scanissue.getSeverity()
+                issue['issuetype'] = scanissue.getIssueType()
+                issue['issuename'] = scanissue.getIssueName()
+                issue['issuedetail'] = scanissue.getIssueDetail()
+                issue['confidence'] = scanissue.getConfidence()
+                issue['host'] = scanissue.getHttpService().getHost()
+                issue['port'] = scanissue.getHttpService().getPort()
+                issue['protocol'] = scanissue.getHttpService().getProtocol()
+                messages = []
+                for httpmessage in scanissue.getHttpMessages():
+                    request = httpmessage.getRequest().tostring()
+                    request = request.encode('utf-8')
+                    response = httpmessage.getResponse().tostring()
+                    response = response.encode('utf-8')
+                    messages.append((request,
+                                        response))
+                issue['messages'] = messages
+                scanissues.append(copy.copy(issue))
+        return scanissues
