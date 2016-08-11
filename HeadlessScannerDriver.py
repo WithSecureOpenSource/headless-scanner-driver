@@ -74,31 +74,7 @@ class BurpExtender(IBurpExtender, IScannerListener, IProxyListener, IHttpListene
             if port == 1112:  # Dump results and quit
                 message.setInterceptAction(
                     IInterceptedProxyMessage.ACTION_DROP)  # Was a control message, do not process further
-                scanissues = []
-                # Collect issues. We have a list of scans that contain
-                # scan findings. Extract these and dump in a JSON.
-                for scaninstance in self._scanlist:
-                    for scanissue in scaninstance.getIssues():
-                        issue = {}
-                        issue['url'] = scanissue.getUrl().toString()
-                        issue['severity'] = scanissue.getSeverity()
-                        issue['issuetype'] = scanissue.getIssueType()
-                        issue['issuename'] = scanissue.getIssueName()
-                        issue['issuedetail'] = scanissue.getIssueDetail()
-                        issue['confidence'] = scanissue.getConfidence()
-                        issue['host'] = scanissue.getHttpService().getHost()
-                        issue['port'] = scanissue.getHttpService().getPort()
-                        issue['protocol'] = scanissue.getHttpService().getProtocol()
-                        messages = []
-                        for httpmessage in scanissue.getHttpMessages():
-                            request = httpmessage.getRequest().tostring()
-                            request = request.encode('utf-8')
-                            response = httpmessage.getResponse().tostring()
-                            response = response.encode('utf-8')
-                            messages.append((request,
-                                             response))
-                        issue['messages'] = messages
-                        scanissues.append(copy.copy(issue))
+                scanissues = self.get_issues()
                 # This output may block due to output buffers being filled.
                 # When running this extension, something should be reading
                 # stdout.
@@ -107,6 +83,18 @@ class BurpExtender(IBurpExtender, IScannerListener, IProxyListener, IHttpListene
                 callbacks.exitSuite(0)  # Exit cleanly
                 return
 
+            if port == 1113:  # Dump results but don't quit
+                message.setInterceptAction(
+                    IInterceptedProxyMessage.ACTION_DROP)  # Was a control message, do not process further
+                scanissues = self.get_issues()
+                #clear the scanlist to avoid getting previous issues in future scans
+                self._scanlist = []
+                # This output may block due to output buffers being filled.
+                # When running this extension, something should be reading
+                # stdout.
+                self._stdout.println(json.dumps(scanissues, encoding="utf-8"))
+                self._stdout.flush()
+                return
             # Duplicate scan rejection
 
             urlpath = re.search('^\w+ (.+) HTTP', request.tostring())
@@ -124,3 +112,31 @@ class BurpExtender(IBurpExtender, IScannerListener, IProxyListener, IHttpListene
                                                           request)
                     self._scanlist.append(scaninstance)
         return
+
+    def get_issues(self):
+        scanissues = []
+        # Collect issues. We have a list of scans that contain
+        # scan findings. Extract these and dump in a JSON.
+        for scaninstance in self._scanlist:
+            for scanissue in scaninstance.getIssues():
+                issue = {}
+                issue['url'] = scanissue.getUrl().toString()
+                issue['severity'] = scanissue.getSeverity()
+                issue['issuetype'] = scanissue.getIssueType()
+                issue['issuename'] = scanissue.getIssueName()
+                issue['issuedetail'] = scanissue.getIssueDetail()
+                issue['confidence'] = scanissue.getConfidence()
+                issue['host'] = scanissue.getHttpService().getHost()
+                issue['port'] = scanissue.getHttpService().getPort()
+                issue['protocol'] = scanissue.getHttpService().getProtocol()
+                messages = []
+                for httpmessage in scanissue.getHttpMessages():
+                    request = httpmessage.getRequest().tostring()
+                    request = request.encode('utf-8')
+                    response = httpmessage.getResponse().tostring()
+                    response = response.encode('utf-8')
+                    messages.append((request,
+                                        response))
+                issue['messages'] = messages
+                scanissues.append(copy.copy(issue))
+        return scanissues

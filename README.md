@@ -23,8 +23,8 @@ Run Burp Suite in headless mode using:
 
 java -jar -Xmx1g -Djava.awt.headless=true -XX:MaxPermSize=1G burpsuite.jar
 
-The extension intercepts two special kinds of HTTP requests; those to
-ports 1111 and 1112.
+The extension intercepts three special kinds of HTTP requests; those to
+ports 1111, 1112 and 1113.
 
 If you think this sort of in-band signaling is odd, I agree. At the
 time of writing, I just could not find a well-defined way of
@@ -40,6 +40,11 @@ scan has finished.
 
 Your client can emit a HTTP request to port 1112 which causes the
 extension to dump all scanner findings and to cleanly exit.
+
+Your client can emit a HTTP request to port 1113 to dump all scanner
+findings and end all current scans. New scans can be started after this
+and issues collected again at any time.
+
 
 For examples of how to use this from Python, see
 https://github.com/F-Secure/mittn/blob/master/mittn/headlessscanner/
