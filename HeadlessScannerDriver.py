@@ -87,7 +87,7 @@ class BurpExtender(IBurpExtender, IScannerListener, IProxyListener, IHttpListene
                 message.setInterceptAction(
                     IInterceptedProxyMessage.ACTION_DROP)  # Was a control message, do not process further
                 scanissues = self.get_issues()
-                #clear the scanlist to avoid getting previous issues from future scans
+                #clear the scanlist to avoid getting previous issues in future scans
                 self._scanlist = []
                 # This output may block due to output buffers being filled.
                 # When running this extension, something should be reading

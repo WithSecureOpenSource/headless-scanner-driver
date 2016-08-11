@@ -23,7 +23,7 @@ Run Burp Suite in headless mode using:
 
 java -jar -Xmx1g -Djava.awt.headless=true -XX:MaxPermSize=1G burpsuite.jar
 
-The extension intercepts two special kinds of HTTP requests; those to
+The extension intercepts three special kinds of HTTP requests; those to
 ports 1111, 1112 and 1113.
 
 If you think this sort of in-band signaling is odd, I agree. At the
